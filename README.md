@@ -8,5 +8,7 @@ The Open Telemetry Demo is a *microservice-based distributed system* intended to
 
 ## Included Files
 
-- `addonInstall.yaml`: Handles the installation of the OpenTelemetry demo chart on VKS clusters, including a workaround for the helm-controller bug.
-- `addonRepository.yaml`: Declares the upstream Helm repository for the OpenTelemetry demo chart.
+All these files are deployed on the Supervisor and leverages VKS v3.7 or higher. 
+
+- `addonRepository.yaml`: Declares the upstream Helm repository for the OpenTelemetry demo chart. 
+- `addonInstall.yaml`: Handles the installation of the OpenTelemetry demo chart on VKS clusters, including a workaround for the helm-controller bug in VKS v3.7.
