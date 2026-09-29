@@ -1,0 +1,30 @@
+apiVersion: addons.kubernetes.vmware.com/v1alpha1
+kind: AddonRepository
+metadata:
+  name: otel-demo-repo
+  namespace: vmware-system-vks-public
+  annotations:
+    addons.kubernetes.vmware.com/package-offerings: |
+      {
+        "repositoryVersion": "1.0.0"
+      }
+spec:
+  targetRepositoryName: otel-demo-repo  # name of the HelmRepository CR generated in the VKS clusters
+  version: "1.0.0"
+  fetch:
+    helmRepository:
+      url: https://open-telemetry.github.io/opentelemetry-helm-charts # URL of the Helm chart repository
+  addonFilters:
+    - name: opentelemetry-demo
+      versions:
+        - "0.42.1"
+---
+apiVersion: addons.kubernetes.vmware.com/v1alpha1
+kind: AddonRepositoryInstall
+metadata:
+  name: otel-demo-repo-install
+  namespace: vmware-system-vks-public
+spec:
+  addonRepositoryRef:
+    name: otel-demo-repo  # Name of the AddonRepository CR
+    namespace: vmware-system-vks-public
