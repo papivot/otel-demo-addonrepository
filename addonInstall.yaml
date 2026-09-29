@@ -1,0 +1,100 @@
+### NOTE: The VKS 3.7 has a bug where the helm-controller may not get installed as part of the VKS cluster deployment workflow. 
+### This will prevent the otel-demo helm chart to be installed successfully
+### In such a scenario, install the cluster-helm-controller AddonInstall and the corrosponding <CLUSTER_NAME>-helm-controller AddonConfig CR.
+---
+apiVersion: addons.kubernetes.vmware.com/v1alpha1
+kind: AddonInstall
+metadata:
+  name: cluster-helm-controller
+  namespace: demo1 # Supervisor namespace of the workload-vsphere-vks1 VKS cluster
+spec:
+  addonRef:
+    name: helm-controller
+  clusters:
+  - selector:
+      matchLabels:
+        cluster.x-k8s.io/cluster-name: workload-vsphere-vks1
+---
+apiVersion: addons.kubernetes.vmware.com/v1alpha1
+kind: AddonConfig
+metadata:
+  annotations:
+    clusteraddon.addons.kubernetes.vmware.com/owned-for-deletion: "true"
+  name: workload-vsphere-vks1-helm-controller  # <CLUSTER_NAME>-<ADDON_NAME> naming convention
+  namespace: demo1 # Supervisor namespace of the workload-vsphere-vks1 VKS cluster
+spec:
+  values:
+    helmController:
+      priorityClassName: ""
+    sourceController:
+      priorityClassName: ""
+---
+###
+### OTEL DEMO AddonInstall and AddonConfig starts here
+### 
+apiVersion: addons.kubernetes.vmware.com/v1alpha1
+kind: AddonInstall
+metadata:
+  name: otel-demo-install
+  namespace: demo1  # Supervisor namespace of the workload-vsphere-vks1 VKS cluster
+spec:
+  addonRef:
+    name: opentelemetry-demo  # Name of the Addon
+  releaseFilter:
+    ref:
+      name: opentelemetry-demo.0.42.1  # Pins the exact chart version from the source HelmRelease
+  clusters:
+    - selector:
+        matchLabels:
+          cluster.x-k8s.io/cluster-name: workload-vsphere-vks1
+---
+apiVersion: addons.kubernetes.vmware.com/v1alpha1
+kind: AddonConfig
+metadata:
+  name: workload-vsphere-vks1-opentelemetry-demo  # <CLUSTER_NAME>-<ADDON_NAME> naming convention
+  namespace: demo1  # Supervisor namespace of the workload-vsphere-vks1 VKS cluster
+  labels:
+    addon.kubernetes.vmware.com/addon-namespace: demo1
+spec:
+  values:
+    helmOptions:
+      targetNamespace: "otel-demo"
+    helmValues:
+      opentelemetry-collector:
+        enabled: false
+      otel-ebpf-profiler:
+        enabled: false
+      jaeger:
+        enabled: false
+      prometheus:
+        enabled: false
+      grafana:
+        enabled: false
+      opensearch:
+        enabled: false
+
+      default:
+        image:
+          repository: ghcr.io/open-telemetry/demo
+          pullPolicy: IfNotPresent
+        replicas: 1
+
+      components:
+        chatbot:
+          enabled: false
+        agent:
+          enabled: false
+        mcp:
+          enabled: false
+        telemetry-docs:
+          enabled: false
+        opamp-server:
+          enabled: false
+
+        frontend-proxy:
+          service:
+            type: LoadBalancer
+            port: 8080
+
+        load-generator:
+          enabled: true
