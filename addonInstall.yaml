@@ -1,6 +1,6 @@
 ### NOTE: The VKS 3.7 has a bug where the helm-controller may not get installed as part of the VKS cluster deployment workflow. 
-### This will prevent the otel-demo helm chart to be installed successfully
-### In such a scenario, install the cluster-helm-controller AddonInstall and the corrosponding <CLUSTER_NAME>-helm-controller AddonConfig CR.
+### This will prevent the otel-demo helm chart from being installed successfully.
+### In such a scenario, install the cluster-helm-controller AddonInstall and the corresponding <CLUSTER_NAME>-helm-controller AddonConfig CR.
 ---
 apiVersion: addons.kubernetes.vmware.com/v1alpha1
 kind: AddonInstall
